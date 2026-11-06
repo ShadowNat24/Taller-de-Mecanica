@@ -11,15 +11,11 @@ formulario.addEventListener("submit", function (evento) {
     };
 
     fetch("../api/login.php", {
-
         method: "POST",
-
         headers: {
             "Content-Type": "application/json"
         },
-
         body: JSON.stringify(datos)
-
     })
 
         .then(respuesta => respuesta.json().then(datos => ({
@@ -31,7 +27,8 @@ formulario.addEventListener("submit", function (evento) {
 
             mensaje.textContent = resultado.datos.mensaje;
 
-            if (resultado.estado) {
+            if (resultado.estado && resultado.datos.token) {
+                localStorage.setItem("token", resultado.datos.token);
                 window.location.href = "../index.php";
             }
 
