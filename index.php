@@ -1,21 +1,9 @@
-<?php
-
-session_start();
-
-if (!isset($_SESSION["id"])) {
-    header("Location: vistas/login.html");
-    exit;
-}
-
-?>
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <title>Taller de Mecánica</title>
-
-    <link rel="stylesheet" href="css/estilos.css">
 </head>
 
 <body>
