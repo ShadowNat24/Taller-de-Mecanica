@@ -5,19 +5,42 @@ const tabla = document.getElementById("tablaAutos");
 const mensaje = document.getElementById("mensaje");
 const filtro = document.getElementById("filtroEstado");
 
-// Mostrar vehículos
+const token = localStorage.getItem("token");
+
+// Si no hay token, volver al login.
+if (!token) {
+    window.location.href = "vistas/login.html";
+}
+
+// Enviar el token en las peticiones a la API.
+function encabezados() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+    };
+}
+
+// Mostrar vehículos.
 function cargarAutos() {
 
     let estado = filtro.value;
-
     let url = API;
 
     if (estado !== "") {
         url += "?estado=" + encodeURIComponent(estado);
     }
 
-    fetch(url)
-        .then(respuesta => respuesta.json())
+    fetch(url, {
+        headers: encabezados()
+    })
+        .then(respuesta => {
+            if (respuesta.status === 401) {
+                localStorage.removeItem("token");
+                window.location.href = "vistas/login.html";
+                return [];
+            }
+            return respuesta.json();
+        })
         .then(autos => {
 
             tabla.innerHTML = "";
@@ -52,7 +75,7 @@ function cargarAutos() {
         });
 }
 
-// Registrar vehículo
+// Registrar vehículo.
 formulario.addEventListener("submit", function (evento) {
 
     evento.preventDefault();
@@ -66,9 +89,7 @@ formulario.addEventListener("submit", function (evento) {
 
     fetch(API, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
+        headers: encabezados(),
         body: JSON.stringify(datos)
     })
 
@@ -91,8 +112,10 @@ formulario.addEventListener("submit", function (evento) {
 
 });
 
-// Filtrar vehículos
+// Filtrar vehículos.
 filtro.addEventListener("change", cargarAutos);
 
-// Cargar la lista al abrir la página
-cargarAutos();
+// Cargar la lista al abrir la página.
+if (token) {
+    cargarAutos();
+}
